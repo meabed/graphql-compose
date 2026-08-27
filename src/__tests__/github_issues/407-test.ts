@@ -1,6 +1,6 @@
 import { print } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
-import { schemaComposer } from '../..';
+import { graphqlVersion, schemaComposer } from '../..';
 
 describe('github issue #407', () => {
   it('defaultValue can take an object with JSON type', () => {
@@ -37,7 +37,7 @@ describe('github issue #407', () => {
     expect(sdl).toBe(
       /* GraphQL */ `
 input InputWithJSONAndDefaultValue {
-  json: JSON = {}
+  json: JSON = ${graphqlVersion >= 17 ? '{  }' : '{}'}
 }
     `.trim()
     );

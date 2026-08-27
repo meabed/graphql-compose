@@ -34,7 +34,10 @@ describe('github issue #273: Object directives are removed from schema', () => {
       omitDescriptions: true,
     });
 
-    expect(sdl).toBe(dedent`
+    if (graphqlVersion >= 17) {
+      expect(sdl).toContain('directive @oneOf on INPUT_OBJECT');
+    }
+    expect(sdl.replace('\n\ndirective @oneOf on INPUT_OBJECT', '')).toBe(dedent`
       directive @test on OBJECT | INPUT_OBJECT | SCALAR | ENUM
 
       directive @specifiedBy(

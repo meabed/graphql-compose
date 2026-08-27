@@ -1410,8 +1410,7 @@ export class ObjectTypeComposer<TSource = any, TContext = any> {
 
   addInterface(
     iface:
-      | InterfaceTypeComposerDefinition<any, TContext>
-      | InterfaceTypeComposerThunked<any, TContext>
+      InterfaceTypeComposerDefinition<any, TContext> | InterfaceTypeComposerThunked<any, TContext>
   ): this {
     if (!this.hasInterface(iface)) {
       this._gqcInterfaces.push(

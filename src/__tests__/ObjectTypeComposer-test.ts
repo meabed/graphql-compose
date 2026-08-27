@@ -57,7 +57,7 @@ describe('ObjectTypeComposer', () => {
       });
 
       it('should throw error if field does not exist', () => {
-        expect(() => tc.getField('missing')).toThrowError(/Cannot get field.*does not exist/);
+        expect(() => tc.getField('missing')).toThrow(/Cannot get field.*does not exist/);
       });
     });
 
@@ -1079,7 +1079,7 @@ describe('ObjectTypeComposer', () => {
       expect(tc.hasResolver('myResolver3')).toBe(true);
       tc.removeResolver('myResolver3');
       expect(tc.hasResolver('myResolver3')).toBe(false);
-      expect(() => tc.getResolver('myResolver3')).toThrowError(
+      expect(() => tc.getResolver('myResolver3')).toThrow(
         /does not have resolver with name 'myResolver3'/
       );
     });
@@ -1243,7 +1243,7 @@ describe('ObjectTypeComposer', () => {
           (ArticleTC as any)._relationWithResolverToFC({
             resolver: 'abc',
           })
-        ).toThrowError(/provide correct Resolver/);
+        ).toThrow(/provide correct Resolver/);
       });
 
       it('should throw error if provided `type` property', () => {
@@ -1252,7 +1252,7 @@ describe('ObjectTypeComposer', () => {
             resolver: UserTC.getResolver('findById'),
             type: GraphQLInt,
           })
-        ).toThrowError(/use `resolver` and `type`/);
+        ).toThrow(/use `resolver` and `type`/);
       });
 
       it('should throw error if provided `resolve` property', () => {
@@ -1261,7 +1261,7 @@ describe('ObjectTypeComposer', () => {
             resolver: UserTC.getResolver('findById'),
             resolve: () => {},
           })
-        ).toThrowError(/use `resolver` and `resolve`/);
+        ).toThrow(/use `resolver` and `resolve`/);
       });
     });
 
@@ -1404,15 +1404,15 @@ describe('ObjectTypeComposer', () => {
     it('should throw error on non-existent field', () => {
       expect(() => {
         tc1.deprecateFields('missing');
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
 
       expect(() => {
         tc1.deprecateFields(['missing']);
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
 
       expect(() => {
         tc1.deprecateFields({ missing: 'Deprecate reason' });
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
     });
   });
 

@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
@@ -15,9 +14,8 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2017", "esnext.asynciterable"],
+    "lib": ["es2017", "es2018.asynciterable"],
     "types": ["node", "jest"],
-    "baseUrl": ".",
     "rootDir": "./src",
   },
   "include": ["src/**/*"],

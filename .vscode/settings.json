@@ -1,8 +1,4 @@
 {
-  "eslint.validate": ["javascript", "typescript"],
   "javascript.validate.enable": false,
   "javascript.autoClosingTags": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
 }

@@ -1,4 +1,5 @@
 import { GraphQLScalarType, GraphQLError, Kind } from '../graphql';
+import { graphqlVersion } from '../utils/graphqlVersion';
 
 export default new GraphQLScalarType({
   name: 'Date',
@@ -46,13 +47,16 @@ export default new GraphQLScalarType({
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(
         `Query error: Can only parse string or integer to Date but got a: ${ast.kind}`,
-        [ast]
+        graphqlVersion >= 17 ? { nodes: [ast] } : ([ast] as any)
       );
     }
 
     const result = new Date(ast.value);
     if (Number.isNaN(result.getTime())) {
-      throw new GraphQLError('Query error: Invalid date', [ast]);
+      throw new GraphQLError(
+        'Query error: Invalid date',
+        graphqlVersion >= 17 ? { nodes: [ast] } : ([ast] as any)
+      );
     }
 
     return result;

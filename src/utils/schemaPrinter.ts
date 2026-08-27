@@ -377,7 +377,10 @@ export function printArgs(
 }
 
 export function printInputValue(arg: GraphQLArgument | GraphQLInputField): string {
-  const defaultAST = astFromValue(arg.defaultValue, arg.type);
+  const defaultInput = (arg as any).default;
+  const defaultAST = defaultInput
+    ? defaultInput.literal || require('graphql').valueToLiteral(defaultInput.value, arg.type)
+    : astFromValue(arg.defaultValue, arg.type);
   let argDecl = `${arg.name}: ${String(arg.type)}`;
   if (defaultAST) {
     argDecl += ` = ${print(defaultAST)}`;

@@ -25,7 +25,7 @@ describe('github issue #314: Fields defined as thunk with arguments causes stack
 
     expect(() => {
       composer.buildSchema();
-    }).not.toThrowError(`Maximum call stack size exceeded`);
+    }).not.toThrow(`Maximum call stack size exceeded`);
 
     const schema = composer.buildSchema();
     const barArg = (schema.getType(`Foo`) as any).getFields().bar.args[0];

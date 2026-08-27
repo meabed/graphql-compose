@@ -45,7 +45,7 @@ describe('EnumTypeComposer', () => {
       });
 
       it('should throw error if value does not exist', () => {
-        expect(() => etc.getField('missing')).toThrowError(/Cannot get value.*does not exist/);
+        expect(() => etc.getField('missing')).toThrow(/Cannot get value.*does not exist/);
       });
     });
 
@@ -284,15 +284,15 @@ describe('EnumTypeComposer', () => {
       etc.setFields({ f1: {}, f2: {}, f3: {} });
       expect(() => {
         etc.deprecateFields('missing');
-      }).toThrowError(/Cannot deprecate non-existent value/);
+      }).toThrow(/Cannot deprecate non-existent value/);
 
       expect(() => {
         etc.deprecateFields(['missing']);
-      }).toThrowError(/Cannot deprecate non-existent value/);
+      }).toThrow(/Cannot deprecate non-existent value/);
 
       expect(() => {
         etc.deprecateFields({ missing: 'Deprecate reason' });
-      }).toThrowError(/Cannot deprecate non-existent value/);
+      }).toThrow(/Cannot deprecate non-existent value/);
     });
   });
 
@@ -306,7 +306,7 @@ describe('EnumTypeComposer', () => {
 
       expect(() => {
         etc.clone(undefined as any);
-      }).toThrowError(/You should provide newTypeName/);
+      }).toThrow(/You should provide newTypeName/);
     });
   });
 

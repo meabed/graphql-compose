@@ -148,7 +148,7 @@ describe('ScalarTypeComposer', () => {
 
       expect(() => {
         stc.clone(undefined as any);
-      }).toThrowError(/You should provide newTypeName/);
+      }).toThrow(/You should provide newTypeName/);
     });
   });
 

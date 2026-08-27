@@ -401,6 +401,6 @@ function astFromValueSafe(value: unknown, type: GraphQLInputType): ReturnType<ty
   try {
     return astFromValue(value, type);
   } catch (e) {
-    return toValueNode(value);
+    return toValueNode(value) as ReturnType<typeof astFromValue>;
   }
 }

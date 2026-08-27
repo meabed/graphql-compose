@@ -57,7 +57,14 @@ describe('github issue #246: Directives are removed from schema in SchemaCompose
   it('via constructor', async () => {
     const schemaComposer = new SchemaComposer(sdl);
     if (graphqlVersion >= 15.1) {
-      expect(schemaComposer.toSDL({ omitDescriptions: true, exclude: ['String'] }))
+      const printedSchema = schemaComposer.toSDL({
+        omitDescriptions: true,
+        exclude: ['String'],
+      });
+      if (graphqlVersion >= 17) {
+        expect(printedSchema).toContain('directive @oneOf on INPUT_OBJECT');
+      }
+      expect(printedSchema.replace('\n\ndirective @oneOf on INPUT_OBJECT', ''))
         .toMatchInlineSnapshot(`
         "directive @test(reason: String = "No longer supported") on FIELD_DEFINITION | ENUM_VALUE | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 

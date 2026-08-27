@@ -1,4 +1,5 @@
 import { GraphQLScalarType, GraphQLError, Kind } from '../graphql';
+import { graphqlVersion } from '../utils/graphqlVersion';
 
 export default new GraphQLScalarType<Buffer, string>({
   name: 'Buffer',
@@ -19,14 +20,17 @@ export default new GraphQLScalarType<Buffer, string>({
     if (ast.kind !== Kind.STRING) {
       throw new GraphQLError(
         `Query error: Can only parse strings to buffers but got a: ${ast.kind}`,
-        [ast]
+        graphqlVersion >= 17 ? { nodes: [ast] } : ([ast] as any)
       );
     }
 
     const result = Buffer.from(ast.value);
 
     if (ast.value !== result.toString()) {
-      throw new GraphQLError('Query error: Invalid buffer encoding', [ast]);
+      throw new GraphQLError(
+        'Query error: Invalid buffer encoding',
+        graphqlVersion >= 17 ? { nodes: [ast] } : ([ast] as any)
+      );
     }
 
     return result;

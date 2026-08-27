@@ -406,7 +406,7 @@ describe('SchemaComposer', () => {
 
       sc.removeEmptyTypes(ViewerTC);
 
-      expect(console.log).lastCalledWith(
+      expect(console.log).toHaveBeenLastCalledWith(
         "graphql-compose: Delete field 'Viewer.stub' with type 'Stub', cause it does not have fields."
       );
       global.console.log = oldConsoleLog;
@@ -516,9 +516,7 @@ describe('SchemaComposer', () => {
           name: String
         }
       `);
-      expect(() => sc.getOTC('Author')).toThrowError(
-        'Cannot find ObjectTypeComposer with name Author'
-      );
+      expect(() => sc.getOTC('Author')).toThrow('Cannot find ObjectTypeComposer with name Author');
     });
   });
 
@@ -551,9 +549,7 @@ describe('SchemaComposer', () => {
           name: String
         }
       `);
-      expect(() => sc.getITC('Author')).toThrowError(
-        'Cannot find InputTypeComposer with name Author'
-      );
+      expect(() => sc.getITC('Author')).toThrow('Cannot find InputTypeComposer with name Author');
     });
   });
 
@@ -582,7 +578,7 @@ describe('SchemaComposer', () => {
           name: String
         }
       `);
-      expect(() => sc.getSTC('Sort')).toThrowError('Cannot find ScalarTypeComposer with name Sort');
+      expect(() => sc.getSTC('Sort')).toThrow('Cannot find ScalarTypeComposer with name Sort');
     });
   });
 
@@ -615,7 +611,7 @@ describe('SchemaComposer', () => {
           name: String
         }
       `);
-      expect(() => sc.getETC('Sort')).toThrowError('Cannot find EnumTypeComposer with name Sort');
+      expect(() => sc.getETC('Sort')).toThrow('Cannot find EnumTypeComposer with name Sort');
     });
   });
 
@@ -648,7 +644,7 @@ describe('SchemaComposer', () => {
           name: String
         }
       `);
-      expect(() => sc.getIFTC('IFace')).toThrowError(
+      expect(() => sc.getIFTC('IFace')).toThrow(
         'Cannot find InterfaceTypeComposer with name IFace'
       );
     });
@@ -1038,7 +1034,11 @@ describe('SchemaComposer', () => {
         // 2 |   a: String @foo(length: true)
         //   |             ^
         // 3 | }
-      }).toThrow(`Argument "key" of required type "String!" was not provided.`);
+      }).toThrow(
+        graphqlVersion >= 17
+          ? `Argument "@foo(key:)" of required type "String!" was not provided.`
+          : `Argument "key" of required type "String!" was not provided.`
+      );
     });
   });
 

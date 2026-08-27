@@ -47,7 +47,7 @@ describe('GraphQLDate', () => {
       } as any;
       const date = GraphQLDate.parseLiteral(ast, {});
       expect(date).toBeInstanceOf(Date);
-      expect(date.toJSON()).toEqual(ast.value);
+      expect((date as Date).toJSON()).toEqual(ast.value);
     });
 
     it('parse a ast literal with tz', async () => {
@@ -57,7 +57,7 @@ describe('GraphQLDate', () => {
       } as any;
       const date = GraphQLDate.parseLiteral(ast, {});
       expect(date).toBeInstanceOf(Date);
-      expect(date.toJSON()).toEqual('2015-07-24T04:56:42.744Z');
+      expect((date as Date).toJSON()).toEqual('2015-07-24T04:56:42.744Z');
     });
   });
 
@@ -68,6 +68,6 @@ describe('GraphQLDate', () => {
     } as any;
     const date = GraphQLDate.parseLiteral(ast, {});
     expect(date).toBeInstanceOf(Date);
-    expect(date.toJSON()).toBe('2018-11-01T00:00:00.000Z');
+    expect((date as Date).toJSON()).toBe('2018-11-01T00:00:00.000Z');
   });
 });

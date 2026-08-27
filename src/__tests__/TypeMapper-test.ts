@@ -341,7 +341,7 @@ describe('TypeMapper', () => {
             a: String,
           }`
           );
-        }).toThrowError(/but got input type definition/);
+        }).toThrow(/but got input type definition/);
       });
 
       it('should accept ObjectTypeComposer', () => {
@@ -473,7 +473,7 @@ describe('TypeMapper', () => {
 
         expect(() => {
           typeMapper.convertOutputFieldConfig([]);
-        }).toThrowError(/Array must have exact one output type definition/);
+        }).toThrow(/Array must have exact one output type definition/);
 
         const fc6 = typeMapper.convertOutputFieldConfig([['String']]) as any;
         expect(fc6.type).toBeInstanceOf(ListComposer);
@@ -486,11 +486,11 @@ describe('TypeMapper', () => {
 
         expect(() => {
           typeMapper.convertOutputFieldConfig({ type: itc } as any);
-        }).toThrowError(/InputTypeComposer/);
+        }).toThrow(/InputTypeComposer/);
 
         expect(() => {
           typeMapper.convertOutputFieldConfig(itc as any);
-        }).toThrowError(/InputTypeComposer/);
+        }).toThrow(/InputTypeComposer/);
       });
     });
 
@@ -633,7 +633,7 @@ describe('TypeMapper', () => {
           a: String,
         }`
         );
-      }).toThrowError(/but got output type definition/);
+      }).toThrow(/but got output type definition/);
     });
 
     it('should accept InputTypeComposer', () => {
@@ -685,11 +685,11 @@ describe('TypeMapper', () => {
         typeMapper.convertInputFieldConfig({
           type: tc,
         } as any);
-      }).toThrowError(/\sObjectTypeComposer/);
+      }).toThrow(/\sObjectTypeComposer/);
 
       expect(() => {
         typeMapper.convertInputFieldConfig(tc as any);
-      }).toThrowError(/\sObjectTypeComposer/);
+      }).toThrow(/\sObjectTypeComposer/);
     });
 
     it('should pass unchanged thunk', () => {
@@ -733,7 +733,7 @@ describe('TypeMapper', () => {
 
       expect(() => {
         typeMapper.convertInputFieldConfig([]);
-      }).toThrowError(/Array must have exact one input type definition/);
+      }).toThrow(/Array must have exact one input type definition/);
     });
 
     it('should process inputFieldConfigMap()', () => {
@@ -862,7 +862,7 @@ describe('TypeMapper', () => {
           a: String,
         }`
         );
-      }).toThrowError(/but got output type definition/);
+      }).toThrow(/but got output type definition/);
     });
 
     it('should accept InputTypeComposer', () => {
@@ -958,7 +958,7 @@ describe('TypeMapper', () => {
 
       expect(() => {
         typeMapper.convertArgConfig([]);
-      }).toThrowError(/Array must have exact one input type definition/);
+      }).toThrow(/Array must have exact one input type definition/);
     });
 
     it('should throw error if provided ObjectTypeComposer', () => {
@@ -966,11 +966,11 @@ describe('TypeMapper', () => {
 
       expect(() => {
         typeMapper.convertArgConfig({ type: tc } as any);
-      }).toThrowError(/\sObjectTypeComposer/);
+      }).toThrow(/\sObjectTypeComposer/);
 
       expect(() => {
         typeMapper.convertArgConfig(tc as any);
-      }).toThrowError(/\sObjectTypeComposer/);
+      }).toThrow(/\sObjectTypeComposer/);
     });
 
     it('should process ArgConfigMap', () => {

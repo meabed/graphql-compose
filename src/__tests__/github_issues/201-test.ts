@@ -11,6 +11,6 @@ describe('github issue #201: Type kind "ObjectTypeExtension" not supported', () 
           author(id: Int!): Author
         }
       `);
-    }).not.toThrowError('Type kind "ObjectTypeExtension" not supported.');
+    }).not.toThrow('Type kind "ObjectTypeExtension" not supported.');
   });
 });

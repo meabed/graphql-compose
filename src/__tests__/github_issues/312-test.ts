@@ -22,6 +22,6 @@ describe('github issue #312: Error when merging graphql-js fields', () => {
 
     expect(() => {
       composer2.buildSchema();
-    }).not.toThrowError('Query.test should provide "deprecationReason" instead of "isDeprecated".');
+    }).not.toThrow('Query.test should provide "deprecationReason" instead of "isDeprecated".');
   });
 });

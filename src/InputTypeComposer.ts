@@ -78,8 +78,7 @@ export type InputTypeComposerFieldConfig = {
 };
 
 export type InputTypeComposerThunked<TContext> =
-  | InputTypeComposer<TContext>
-  | ThunkComposer<InputTypeComposer<TContext>, GraphQLInputType>;
+  InputTypeComposer<TContext> | ThunkComposer<InputTypeComposer<TContext>, GraphQLInputType>;
 
 export class InputTypeComposer<TContext = any> {
   schemaComposer: SchemaComposer<TContext>;
