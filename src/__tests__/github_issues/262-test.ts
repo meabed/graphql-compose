@@ -26,13 +26,16 @@ describe('github issue #262: SchemaComposer fails to map enum values in field di
       permissions: ['CREATE', 'READ'],
     });
 
-    expect(
-      sc.toSDL({
-        include: ['Note'],
-        exclude: ['String', 'ID', 'Boolean', 'Float', 'Int'],
-        omitDescriptions: true,
-      })
-    ).toMatchInlineSnapshot(`
+    const printedSchema = sc.toSDL({
+      include: ['Note'],
+      exclude: ['String', 'ID', 'Boolean', 'Float', 'Int'],
+      omitDescriptions: true,
+    });
+    if (graphqlVersion >= 17) {
+      expect(printedSchema).toContain('directive @oneOf on INPUT_OBJECT');
+    }
+    expect(printedSchema.replace('\n\ndirective @oneOf on INPUT_OBJECT', ''))
+      .toMatchInlineSnapshot(`
       "directive @auth(permissions: [CrudPermissions]) on OBJECT | FIELD_DEFINITION
 
       directive @specifiedBy(
@@ -85,7 +88,8 @@ describe('github issue #262: SchemaComposer fails to map enum values in field di
     const thisWork = new SchemaComposer(processedSchema);
     expect(thisWork).not.toBeUndefined();
 
-    expect(printedProcessedSchema).toMatchInlineSnapshot(`
+    expect(printedProcessedSchema.replace('\n\ndirective @oneOf on INPUT_OBJECT', ''))
+      .toMatchInlineSnapshot(`
       "directive @auth(permissions: [CrudPermissions]) on OBJECT | FIELD_DEFINITION
 
       directive @specifiedBy(

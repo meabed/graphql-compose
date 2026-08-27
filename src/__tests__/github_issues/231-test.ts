@@ -12,6 +12,6 @@ describe('github issue #231: Cloning a resolver evaluates its configuration thun
       },
     });
     aResolver.clone();
-    expect(aTypeThunk).not.toBeCalled();
+    expect(aTypeThunk).not.toHaveBeenCalled();
   });
 });

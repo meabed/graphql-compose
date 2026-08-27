@@ -16,10 +16,7 @@ export type CompareTypeComposersFn = (
 ) => CompareTypeComposersResult;
 
 export type CompareTypeComposersOption =
-  | boolean
-  | 'ALPHABETIC'
-  | 'GROUP_BY_TYPE'
-  | CompareTypeComposersFn;
+  boolean | 'ALPHABETIC' | 'GROUP_BY_TYPE' | CompareTypeComposersFn;
 
 const rootOrderDefault = ['Query', 'Mutation', 'Subscription'];
 

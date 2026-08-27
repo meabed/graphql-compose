@@ -20,9 +20,7 @@ import { printEnum, SchemaPrinterOptions } from './utils/schemaPrinter';
 import { getEnumTypeDefinitionNode } from './utils/definitionNode';
 
 export type EnumTypeComposerDefinition =
-  | TypeAsString
-  | EnumTypeComposerAsObjectDefinition
-  | GraphQLEnumType;
+  TypeAsString | EnumTypeComposerAsObjectDefinition | GraphQLEnumType;
 
 export type EnumTypeComposerAsObjectDefinition = {
   name: string;

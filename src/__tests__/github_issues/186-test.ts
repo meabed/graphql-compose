@@ -24,6 +24,6 @@ describe('github issue #186: error when merging existing schema', () => {
 
     expect(() => {
       composer2.buildSchema();
-    }).not.toThrowError('Query.test should provide "deprecationReason" instead of "isDeprecated".');
+    }).not.toThrow('Query.test should provide "deprecationReason" instead of "isDeprecated".');
   });
 });

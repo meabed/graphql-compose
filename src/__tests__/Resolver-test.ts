@@ -34,7 +34,7 @@ describe('Resolver', () => {
   it('should throw error if not passed name in opts', () => {
     expect(() => {
       new Resolver({}, schemaComposer);
-    }).toThrowError();
+    }).toThrow();
   });
 
   it('should have getDescription/setDescription methods', () => {
@@ -53,7 +53,7 @@ describe('Resolver', () => {
 
     expect(() => {
       resolver.setKind('improperKind');
-    }).toThrowError('You provide incorrect value');
+    }).toThrow('You provide incorrect value');
   });
 
   describe('`type` methods', () => {
@@ -74,7 +74,7 @@ describe('Resolver', () => {
             fields: () => ({}),
           }) as any
         );
-      }).toThrowError();
+      }).toThrow();
     });
 
     it('should convert type as string to GraphQLType', () => {
@@ -132,7 +132,7 @@ describe('Resolver', () => {
           },
           schemaComposer
         );
-      }).toThrowError('InputTypeComposer');
+      }).toThrow('InputTypeComposer');
     });
 
     it('should accept Resolver for `type` option', () => {
@@ -219,7 +219,7 @@ describe('Resolver', () => {
     it('should have getArgType method', () => {
       resolver.setArgs({ b1: 'String' });
       expect(resolver.getArgType('b1')).toBe(GraphQLString);
-      expect(() => resolver.getArgType('inexistent')).toThrowError();
+      expect(() => resolver.getArgType('inexistent')).toThrow();
     });
 
     it('should have setArgType method', () => {
@@ -404,31 +404,31 @@ describe('Resolver', () => {
       it('should throw error if arg does not exists', () => {
         expect(() => {
           resolver.cloneArg('missingArg', 'NewTypeNameInput');
-        }).toThrowError('Argument does not exist');
+        }).toThrow('Argument does not exist');
       });
 
       it('should throw error if arg is GraphqlNonNull wrapped scalar type', () => {
         expect(() => {
           resolver.cloneArg('mandatoryScalar', 'NewTypeNameInput');
-        }).toThrowError('Cannot clone arg');
+        }).toThrow('Cannot clone arg');
       });
 
       it('should throw error if arg is scalar type', () => {
         expect(() => {
           resolver.cloneArg('scalar', 'NewTypeNameInput');
-        }).toThrowError('Cannot clone arg');
+        }).toThrow('Cannot clone arg');
       });
 
       it('should throw error if provided incorrect new type name', () => {
         expect(() => {
           resolver.cloneArg('filter', '');
-        }).toThrowError('should provide new type name');
+        }).toThrow('should provide new type name');
         expect(() => {
           resolver.cloneArg('filter', '#3f3sf');
-        }).toThrowError('should provide new type name');
+        }).toThrow('should provide new type name');
         expect(() => {
           resolver.cloneArg('filter', 'FilterInput');
-        }).toThrowError('It is equal to current name');
+        }).toThrow('It is equal to current name');
       });
 
       it('should clone GraphqlNonNull wrapped types', () => {
@@ -734,18 +734,18 @@ describe('Resolver', () => {
     it('should throw errors if provided incorrect options', () => {
       expect(() => {
         resolver.addFilterArg({} as any);
-      }).toThrowError('`opts.name` is required');
+      }).toThrow('`opts.name` is required');
 
       expect(() => {
         resolver.addFilterArg({ name: 'price' } as any);
-      }).toThrowError('`opts.type` is required');
+      }).toThrow('`opts.type` is required');
 
       expect(() => {
         resolver.addFilterArg({
           name: 'price',
           type: 'input {min: Int}',
         });
-      }).toThrowError('opts.filterTypeNameFallback: string');
+      }).toThrow('opts.filterTypeNameFallback: string');
     });
   });
 
@@ -850,18 +850,18 @@ describe('Resolver', () => {
     it('should throw errors if provided incorrect options', () => {
       expect(() => {
         resolver.addSortArg({} as any);
-      }).toThrowError('`opts.name` is required');
+      }).toThrow('`opts.name` is required');
 
       expect(() => {
         resolver.addSortArg({ name: 'PRICE_ASC' } as any);
-      }).toThrowError('`opts.value` is required');
+      }).toThrow('`opts.value` is required');
 
       expect(() => {
         resolver.addSortArg({
           name: 'PRICE_ASC',
           value: 123,
         });
-      }).toThrowError('opts.sortTypeNameFallback: string');
+      }).toThrow('opts.sortTypeNameFallback: string');
 
       expect(() => {
         resolver.setArg('sort', { type: GraphQLInt });
@@ -869,7 +869,7 @@ describe('Resolver', () => {
           name: 'PRICE_ASC',
           value: 123,
         });
-      }).toThrowError("Resolver must have 'sort' arg with EnumType");
+      }).toThrow("Resolver must have 'sort' arg with EnumType");
     });
   });
   it('should have chain methods', () => {

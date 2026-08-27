@@ -934,8 +934,7 @@ export class InterfaceTypeComposer<TSource = any, TContext = any> {
       const clonedTypeResolvers: InterfaceTypeComposerResolversMap<any> = new Map();
       typeResolversMap.forEach((fn, tc) => {
         const clonedTC = cloneTypeTo(tc, anotherSchemaComposer, cloneMap) as
-          | ObjectTypeComposer<any, any>
-          | GraphQLObjectType;
+          ObjectTypeComposer<any, any> | GraphQLObjectType;
         clonedTypeResolvers.set(clonedTC, fn);
       });
       cloned.setTypeResolvers(clonedTypeResolvers);
@@ -1283,8 +1282,7 @@ export class InterfaceTypeComposer<TSource = any, TContext = any> {
 
   addInterface(
     iface:
-      | InterfaceTypeComposerDefinition<any, TContext>
-      | InterfaceTypeComposerThunked<any, TContext>
+      InterfaceTypeComposerDefinition<any, TContext> | InterfaceTypeComposerThunked<any, TContext>
   ): this {
     if (!this.hasInterface(iface)) {
       this._gqcInterfaces.push(

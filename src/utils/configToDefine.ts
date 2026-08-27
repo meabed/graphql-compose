@@ -40,6 +40,7 @@ import {
   InterfaceTypeComposer,
 } from '../InterfaceTypeComposer';
 import { getComposeTypeName } from './typeHelpers';
+import { graphqlVersion } from './graphqlVersion';
 
 function isPlainObj(obj: any): obj is Record<any, any> {
   return obj && typeof obj === 'object' && !Array.isArray(obj);
@@ -205,7 +206,7 @@ export function defineEnumValues(
       !value.hasOwnProperty('isDeprecated'),
       `${type.name}.${valueName} should provide "deprecationReason" instead of "isDeprecated".`
     );
-    return {
+    const enumValue = {
       name: valueName,
       description: value.description,
       isDeprecated: Boolean(value.deprecationReason),
@@ -213,7 +214,10 @@ export function defineEnumValues(
       astNode: astNodeMap[valueName],
       value: value.hasOwnProperty('value') ? value.value : valueName,
       extensions: {},
-    } as GraphQLEnumValue;
+    };
+    return graphqlVersion >= 17
+      ? new (require('graphql/type/definition').GraphQLEnumValue)(type, valueName, enumValue)
+      : (enumValue as unknown as GraphQLEnumValue);
   });
 }
 
@@ -222,7 +226,9 @@ export function convertEnumValuesToConfig(
   schemaComposer: SchemaComposer<any>
 ): EnumTypeComposerValueConfigMap {
   const fields = {} as EnumTypeComposerValueConfigMap;
-  values.forEach(({ name, isDeprecated, ...fc }: any) => {
+  values.forEach((enumValue: any) => {
+    const { name, isDeprecated, ...legacyConfig } = enumValue;
+    const fc = typeof enumValue.toConfig === 'function' ? enumValue.toConfig() : legacyConfig;
     fields[name] = fc as any;
     if (fc?.astNode?.directives) {
       const directives = schemaComposer.typeMapper.parseDirectives(fc.astNode.directives);

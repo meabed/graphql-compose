@@ -52,7 +52,7 @@ describe('InputTypeComposer', () => {
       });
 
       it('should throw error if field does not exist', () => {
-        expect(() => itc.getField('inexistent')).toThrowError(/Cannot get field.*does not exist/);
+        expect(() => itc.getField('inexistent')).toThrow(/Cannot get field.*does not exist/);
       });
     });
 
@@ -913,7 +913,7 @@ describe('InputTypeComposer', () => {
 
       expect(() => {
         itc.clone(undefined as any);
-      }).toThrowError(/You should provide new type name/);
+      }).toThrow(/You should provide new type name/);
     });
   });
 

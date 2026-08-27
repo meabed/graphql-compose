@@ -23,10 +23,7 @@ import type { SchemaComposer } from '../SchemaComposer';
 import deprecate from './deprecate';
 
 export type AnyTypeComposer<TContext> =
-  | NamedTypeComposer<TContext>
-  | ListComposer<any>
-  | NonNullComposer<any>
-  | ThunkComposer<any, any>;
+  NamedTypeComposer<TContext> | ListComposer<any> | NonNullComposer<any> | ThunkComposer<any, any>;
 
 export type NamedTypeComposer<TContext> =
   | ObjectTypeComposer<any, TContext>
@@ -64,9 +61,7 @@ export type ComposeOutputTypeDefinition<TContext> =
     >;
 
 export type ComposeNamedInputType<TContext> =
-  | InputTypeComposer<TContext>
-  | EnumTypeComposer<TContext>
-  | ScalarTypeComposer<TContext>;
+  InputTypeComposer<TContext> | EnumTypeComposer<TContext> | ScalarTypeComposer<TContext>;
 
 export type ComposeInputType =
   | ComposeNamedInputType<any>

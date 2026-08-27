@@ -44,7 +44,7 @@ describe('UnionTypeComposer', () => {
       expect(myUTC.getTypeName()).toBe('TestTypeTpl');
 
       // when types A & B are not defined getTypes() throw an error
-      expect(() => myUTC.getType().getTypes()).toThrowError(
+      expect(() => myUTC.getType().getTypes()).toThrow(
         'UnionError[TestTypeTpl]: Type with name "AA" does not exists'
       );
 
@@ -491,14 +491,14 @@ describe('UnionTypeComposer', () => {
         expect(() => {
           const map = new Map<any, any>([[false, () => true]]);
           utc.setTypeResolvers(map);
-        }).toThrowError();
+        }).toThrow();
       });
 
       it('throw error on wrong checkFn', () => {
         expect(() => {
           const map = new Map<any, any>([[PersonTC, true]]);
           utc.setTypeResolvers(map);
-        }).toThrowError();
+        }).toThrow();
       });
     });
 
@@ -509,7 +509,7 @@ describe('UnionTypeComposer', () => {
 
       expect(() => {
         utc.addTypeResolver(PersonTC, undefined as any);
-      }).toThrowError();
+      }).toThrow();
     });
 
     it('removeTypeResolver()', () => {

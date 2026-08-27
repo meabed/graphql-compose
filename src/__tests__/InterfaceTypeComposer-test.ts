@@ -57,7 +57,7 @@ describe('InterfaceTypeComposer', () => {
       });
 
       it('should throw error if field does not exist', () => {
-        expect(() => iftc.getField('missing')).toThrowError(/Cannot get field.*does not exist/);
+        expect(() => iftc.getField('missing')).toThrow(/Cannot get field.*does not exist/);
       });
     });
 
@@ -899,15 +899,15 @@ describe('InterfaceTypeComposer', () => {
     it('should throw error on non-existent field', () => {
       expect(() => {
         iftc1.deprecateFields('missing');
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
 
       expect(() => {
         iftc1.deprecateFields(['missing']);
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
 
       expect(() => {
         iftc1.deprecateFields({ missing: 'Deprecate reason' });
-      }).toThrowError(/Cannot deprecate non-existent field/);
+      }).toThrow(/Cannot deprecate non-existent field/);
     });
   });
 
@@ -1094,14 +1094,14 @@ describe('InterfaceTypeComposer', () => {
         expect(() => {
           const map = new Map<any, any>([[false, () => true]]);
           iftc.setTypeResolvers(map);
-        }).toThrowError();
+        }).toThrow();
       });
 
       it('throw error on wrong checkFn', () => {
         expect(() => {
           const map = new Map<any, any>([[PersonTC, true]]);
           iftc.setTypeResolvers(map);
-        }).toThrowError();
+        }).toThrow();
       });
     });
 
@@ -1112,7 +1112,7 @@ describe('InterfaceTypeComposer', () => {
 
       expect(() => {
         iftc.addTypeResolver(PersonTC as any, undefined as any);
-      }).toThrowError();
+      }).toThrow();
     });
 
     it('removeTypeResolver()', () => {

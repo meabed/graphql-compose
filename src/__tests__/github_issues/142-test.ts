@@ -1,5 +1,4 @@
-import { find, filter } from 'lodash';
-import { GraphQLToolsResolveMethods } from 'src/SchemaComposer';
+import { GraphQLToolsResolveMethods } from '../../SchemaComposer';
 import { schemaComposer, graphql } from '../..';
 
 interface IAuthor {
@@ -65,12 +64,12 @@ describe('github issue #142: Add schema definition in `graphql-tools` way', () =
   const resolvers = {
     Query: {
       posts: () => posts,
-      author: (_: any, { id }: any) => find(authors, { id }),
+      author: (_: any, { id }: any) => authors.find((author) => author.id === id),
     },
 
     Mutation: {
       upvotePost: (_: any, { postId }: any) => {
-        const post = find(posts, { id: postId });
+        const post = posts.find(({ id }) => id === postId);
         if (!post) {
           throw new Error(`Couldn't find post with id ${postId}`);
         }
@@ -80,11 +79,11 @@ describe('github issue #142: Add schema definition in `graphql-tools` way', () =
     },
 
     Author: {
-      posts: (author: IAuthor) => filter(posts, { authorId: author.id }),
+      posts: (author: IAuthor) => posts.filter((post) => post.authorId === author.id),
     },
 
     Post: {
-      author: (post: IPost) => find(authors, { id: post.authorId }),
+      author: (post: IPost) => authors.find((author) => author.id === post.authorId),
     },
   } as GraphQLToolsResolveMethods<any>;
 

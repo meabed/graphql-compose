@@ -207,7 +207,7 @@ describe('toInputObjectType()', () => {
     it('should throw error on field with Union type', () => {
       expect(() => {
         toInputObjectType(tc);
-      }).toThrowError("Can not convert field 'Example.union' to InputType");
+      }).toThrow("Can not convert field 'Example.union' to InputType");
     });
 
     it('should use type from fallbackType option for union', () => {
