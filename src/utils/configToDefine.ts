@@ -46,6 +46,13 @@ function isPlainObj(obj: any): obj is Record<any, any> {
   return obj && typeof obj === 'object' && !Array.isArray(obj);
 }
 
+function copyMissingProperties(target: Record<any, any>, source?: Record<any, any> | null): void {
+  if (source == null) return;
+  Object.keys(source).forEach((key) => {
+    if (!(key in target)) target[key] = source[key];
+  });
+}
+
 export function defineFieldMap(
   config: GraphQLObjectType | GraphQLInterfaceType,
   fieldMap: GraphQLFieldConfigMap<any, any>,
@@ -101,16 +108,20 @@ export function defineFieldMap(
         isPlainObj(argsConfig),
         `${config.name}.${fieldName} args must be an object with argument names as keys.`
       );
-      const fieldArgNodeMap = argAstNodeMap[fieldName] ?? {};
+      const fieldArgNodeMap = argAstNodeMap[fieldName] ?? Object.create(null);
       field.args = Object.keys(argsConfig).map((argName) => {
         const arg = argsConfig[argName];
+        invariant(
+          isPlainObj(arg),
+          `${config.name}.${fieldName}(${argName}:) argument config must be an object`
+        );
         return {
           ...arg,
           name: argName,
           description: arg.description === undefined ? null : arg.description,
           type: arg.type,
-          isDeprecated: Boolean(fieldConfig.deprecationReason),
-          deprecationReason: arg?.deprecationReason,
+          isDeprecated: Boolean(arg.deprecationReason),
+          deprecationReason: arg.deprecationReason,
           defaultValue: arg.defaultValue,
           astNode: fieldArgNodeMap[argName],
         };
@@ -118,24 +129,18 @@ export function defineFieldMap(
     }
     const normalizedArgs = Array.isArray(field.args) ? field.args : [];
     if (graphqlVersion >= 17) {
-      const graphqlFieldConfig: any = { ...fieldConfig, args: {}, astNode: fieldNodeAst };
+      const normalizedArgsByName: Record<string, any> = Object.create(null);
       normalizedArgs.forEach((arg: any) => {
-        const { name, ...argConfig } = arg;
-        graphqlFieldConfig.args[name] = argConfig;
+        normalizedArgsByName[arg.name] = arg;
       });
       const graphqlField: any = new (require('graphql/type/definition').GraphQLField)(
         config,
         fieldName,
-        graphqlFieldConfig
+        { ...fieldConfig, args: normalizedArgsByName, astNode: fieldNodeAst }
       );
-      Object.keys(field).forEach((key) => {
-        if (!(key in graphqlField)) graphqlField[key] = (field as any)[key];
-      });
+      copyMissingProperties(graphqlField, field);
       graphqlField.args.forEach((arg: any) => {
-        const legacyArg = normalizedArgs.find((item: any) => item.name === arg.name);
-        Object.keys(legacyArg).forEach((key) => {
-          if (!(key in arg)) arg[key] = legacyArg[key];
-        });
+        copyMissingProperties(arg, normalizedArgsByName[arg.name]);
       });
       resultFieldMap[fieldName] = graphqlField;
     } else {
@@ -282,8 +287,13 @@ export function defineInputFieldMap(
 
   const resultFieldMap = Object.create(null);
   for (const fieldName of Object.keys(fieldMap)) {
+    const fieldConfig = fieldMap[fieldName];
+    invariant(
+      isPlainObj(fieldConfig),
+      `${config.name}.${fieldName} field config must be an object`
+    );
     const field = {
-      ...fieldMap[fieldName],
+      ...fieldConfig,
       name: fieldName,
       astNode: astNodeMap[fieldName],
     };
@@ -296,11 +306,9 @@ export function defineInputFieldMap(
       const graphqlInputField: any = new (require('graphql/type/definition').GraphQLInputField)(
         config,
         fieldName,
-        { ...fieldMap[fieldName], astNode: astNodeMap[fieldName] }
+        { ...fieldConfig, astNode: astNodeMap[fieldName] }
       );
-      Object.keys(field).forEach((key) => {
-        if (!(key in graphqlInputField)) graphqlInputField[key] = (field as any)[key];
-      });
+      copyMissingProperties(graphqlInputField, field);
       resultFieldMap[fieldName] = graphqlInputField;
     } else {
       resultFieldMap[fieldName] = field;
