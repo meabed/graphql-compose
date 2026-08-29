@@ -71,6 +71,22 @@ describe('ObjectTypeComposer', () => {
         expect(fields.field3.type).toBe(GraphQLString);
       });
 
+      it('should build fields compatible with GraphQL type config', () => {
+        tc.setFields({
+          field3: {
+            type: GraphQLString,
+            args: { arg1: { type: GraphQLInt } },
+            projection: { field1: true },
+          },
+        });
+
+        const field = tc.getType().getFields().field3 as any;
+        const fieldConfig = tc.getType().toConfig().fields.field3;
+        expect(fieldConfig.type).toBe(GraphQLString);
+        expect(fieldConfig.args?.arg1.type).toBe(GraphQLInt);
+        expect(field.projection).toEqual({ field1: true });
+      });
+
       it('should add fields with converting types from string to object', () => {
         tc.setFields({
           field3: { type: 'String' },

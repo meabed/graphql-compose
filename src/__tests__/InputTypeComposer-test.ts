@@ -67,6 +67,14 @@ describe('InputTypeComposer', () => {
       expect(fieldNames).toContain('input3');
     });
 
+    it('builds fields compatible with GraphQL input type config', () => {
+      itc.setField('input3', { type: GraphQLString, defaultValue: 'value' });
+
+      const fieldConfig = itc.getType().toConfig().fields.input3;
+      expect(fieldConfig.type).toBe(GraphQLString);
+      expect(fieldConfig.defaultValue).toBe('value');
+    });
+
     describe('setFields()', () => {
       it('accept regular fields definition', () => {
         itc.setFields({

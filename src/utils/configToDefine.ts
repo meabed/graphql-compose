@@ -105,6 +105,7 @@ export function defineFieldMap(
       field.args = Object.keys(argsConfig).map((argName) => {
         const arg = argsConfig[argName];
         return {
+          ...arg,
           name: argName,
           description: arg.description === undefined ? null : arg.description,
           type: arg.type,
@@ -115,7 +116,31 @@ export function defineFieldMap(
         };
       }) as any;
     }
-    resultFieldMap[fieldName] = field;
+    const normalizedArgs = Array.isArray(field.args) ? field.args : [];
+    if (graphqlVersion >= 17) {
+      const graphqlFieldConfig: any = { ...fieldConfig, args: {}, astNode: fieldNodeAst };
+      normalizedArgs.forEach((arg: any) => {
+        const { name, ...argConfig } = arg;
+        graphqlFieldConfig.args[name] = argConfig;
+      });
+      const graphqlField: any = new (require('graphql/type/definition').GraphQLField)(
+        config,
+        fieldName,
+        graphqlFieldConfig
+      );
+      Object.keys(field).forEach((key) => {
+        if (!(key in graphqlField)) graphqlField[key] = (field as any)[key];
+      });
+      graphqlField.args.forEach((arg: any) => {
+        const legacyArg = normalizedArgs.find((item: any) => item.name === arg.name);
+        Object.keys(legacyArg).forEach((key) => {
+          if (!(key in arg)) arg[key] = legacyArg[key];
+        });
+      });
+      resultFieldMap[fieldName] = graphqlField;
+    } else {
+      resultFieldMap[fieldName] = field;
+    }
   }
   return resultFieldMap;
 }
@@ -267,7 +292,19 @@ export function defineInputFieldMap(
       `${config.name}.${fieldName} field has a resolve property, but ` +
         'Input Types cannot define resolvers.'
     );
-    resultFieldMap[fieldName] = field;
+    if (graphqlVersion >= 17) {
+      const graphqlInputField: any = new (require('graphql/type/definition').GraphQLInputField)(
+        config,
+        fieldName,
+        { ...fieldMap[fieldName], astNode: astNodeMap[fieldName] }
+      );
+      Object.keys(field).forEach((key) => {
+        if (!(key in graphqlInputField)) graphqlInputField[key] = (field as any)[key];
+      });
+      resultFieldMap[fieldName] = graphqlInputField;
+    } else {
+      resultFieldMap[fieldName] = field;
+    }
   }
   return resultFieldMap;
 }
