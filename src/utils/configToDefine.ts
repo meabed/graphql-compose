@@ -46,6 +46,21 @@ function isPlainObj(obj: any): obj is Record<any, any> {
   return obj && typeof obj === 'object' && !Array.isArray(obj);
 }
 
+function copyMissingProperties(target: Record<any, any>, source?: Record<any, any> | null): void {
+  if (source == null) return;
+  Object.keys(source).forEach((key) => {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
+    if (!(key in target)) {
+      Object.defineProperty(target, key, {
+        value: source[key],
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      });
+    }
+  });
+}
+
 export function defineFieldMap(
   config: GraphQLObjectType | GraphQLInterfaceType,
   fieldMap: GraphQLFieldConfigMap<any, any>,
@@ -101,21 +116,44 @@ export function defineFieldMap(
         isPlainObj(argsConfig),
         `${config.name}.${fieldName} args must be an object with argument names as keys.`
       );
-      const fieldArgNodeMap = argAstNodeMap[fieldName] ?? {};
+      const fieldArgNodeMap = argAstNodeMap[fieldName] ?? Object.create(null);
       field.args = Object.keys(argsConfig).map((argName) => {
         const arg = argsConfig[argName];
+        invariant(
+          isPlainObj(arg),
+          `${config.name}.${fieldName}(${argName}:) argument config must be an object`
+        );
         return {
+          ...arg,
           name: argName,
           description: arg.description === undefined ? null : arg.description,
           type: arg.type,
-          isDeprecated: Boolean(fieldConfig.deprecationReason),
-          deprecationReason: arg?.deprecationReason,
+          isDeprecated: Boolean(arg.deprecationReason),
+          deprecationReason: arg.deprecationReason,
           defaultValue: arg.defaultValue,
           astNode: fieldArgNodeMap[argName],
         };
       }) as any;
     }
-    resultFieldMap[fieldName] = field;
+    const normalizedArgs = Array.isArray(field.args) ? field.args : [];
+    if (graphqlVersion >= 17) {
+      const normalizedArgsByName: Record<string, any> = Object.create(null);
+      normalizedArgs.forEach((arg: any) => {
+        normalizedArgsByName[arg.name] = arg;
+      });
+      const graphqlField: any = new (require('graphql/type/definition').GraphQLField)(
+        config,
+        fieldName,
+        { ...fieldConfig, args: normalizedArgsByName, astNode: fieldNodeAst }
+      );
+      copyMissingProperties(graphqlField, field);
+      graphqlField.args.forEach((arg: any) => {
+        copyMissingProperties(arg, normalizedArgsByName[arg.name]);
+      });
+      resultFieldMap[fieldName] = graphqlField;
+    } else {
+      resultFieldMap[fieldName] = field;
+    }
   }
   return resultFieldMap;
 }
@@ -257,8 +295,13 @@ export function defineInputFieldMap(
 
   const resultFieldMap = Object.create(null);
   for (const fieldName of Object.keys(fieldMap)) {
+    const fieldConfig = fieldMap[fieldName];
+    invariant(
+      isPlainObj(fieldConfig),
+      `${config.name}.${fieldName} field config must be an object`
+    );
     const field = {
-      ...fieldMap[fieldName],
+      ...fieldConfig,
       name: fieldName,
       astNode: astNodeMap[fieldName],
     };
@@ -267,7 +310,17 @@ export function defineInputFieldMap(
       `${config.name}.${fieldName} field has a resolve property, but ` +
         'Input Types cannot define resolvers.'
     );
-    resultFieldMap[fieldName] = field;
+    if (graphqlVersion >= 17) {
+      const graphqlInputField: any = new (require('graphql/type/definition').GraphQLInputField)(
+        config,
+        fieldName,
+        { ...fieldConfig, astNode: astNodeMap[fieldName] }
+      );
+      copyMissingProperties(graphqlInputField, field);
+      resultFieldMap[fieldName] = graphqlInputField;
+    } else {
+      resultFieldMap[fieldName] = field;
+    }
   }
   return resultFieldMap;
 }
