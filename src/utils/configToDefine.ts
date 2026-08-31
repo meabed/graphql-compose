@@ -49,7 +49,15 @@ function isPlainObj(obj: any): obj is Record<any, any> {
 function copyMissingProperties(target: Record<any, any>, source?: Record<any, any> | null): void {
   if (source == null) return;
   Object.keys(source).forEach((key) => {
-    if (!(key in target)) target[key] = source[key];
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
+    if (!(key in target)) {
+      Object.defineProperty(target, key, {
+        value: source[key],
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      });
+    }
   });
 }
 
