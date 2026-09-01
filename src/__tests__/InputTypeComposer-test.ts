@@ -67,6 +67,51 @@ describe('InputTypeComposer', () => {
       expect(fieldNames).toContain('input3');
     });
 
+    it('builds fields compatible with GraphQL input type config', () => {
+      itc.setFields({
+        input3: {
+          type: GraphQLString,
+          default: { value: 'value' },
+          deprecationReason: 'Use input4',
+          extensions: { source: 'test' },
+          directives: [{ name: 'inputDirective' }],
+        },
+        input4: {
+          type: GraphQLString,
+          defaultValue: null,
+          description: undefined,
+          extensions: undefined,
+        },
+      });
+
+      const typeConfig = itc.getType().toConfig();
+      const input3 = itc.getType().getFields().input3 as any;
+      if (graphqlVersion >= 17) {
+        const { isInputField } = require('graphql/type/definition');
+        expect(isInputField(input3)).toBe(true);
+        expect(input3.parentType).toBe(itc.getType());
+      }
+      expect(typeConfig.fields.input3).toMatchObject({
+        type: GraphQLString,
+        default: { value: 'value' },
+        deprecationReason: 'Use input4',
+        extensions: { source: 'test' },
+      });
+      expect(input3.astNode?.name.value).toBe('input3');
+      expect(input3.directives).toEqual(
+        expect.arrayContaining([
+          { name: 'inputDirective' },
+          { name: 'deprecated', args: { reason: 'Use input4' } },
+        ])
+      );
+      expect(typeConfig.fields.input4.defaultValue).toBeNull();
+      expect(typeConfig.fields.input4.description).toBeUndefined();
+      expect(typeConfig.fields.input4.extensions).toEqual({});
+
+      const rebuiltType = new GraphQLInputObjectType(typeConfig);
+      expect(rebuiltType.toConfig().fields.input3.type).toBe(GraphQLString);
+    });
+
     describe('setFields()', () => {
       it('accept regular fields definition', () => {
         itc.setFields({

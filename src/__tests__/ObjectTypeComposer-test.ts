@@ -71,6 +71,77 @@ describe('ObjectTypeComposer', () => {
         expect(fields.field3.type).toBe(GraphQLString);
       });
 
+      it('should build fields compatible with GraphQL type config', () => {
+        const resolve = jest.fn();
+        const subscribe = jest.fn();
+        tc.setFields({
+          field3: {
+            type: GraphQLString,
+            args: {
+              arg1: { type: GraphQLInt, default: { value: 5 } },
+              arg2: {
+                type: GraphQLInt,
+                defaultValue: null,
+                deprecationReason: 'Use arg1',
+                extensions: { source: 'test' },
+                directives: [{ name: 'argDirective' }],
+              },
+            },
+            resolve,
+            subscribe,
+            deprecationReason: 'Use field4',
+            extensions: { source: 'test' },
+            directives: [{ name: 'fieldDirective' }],
+            projection: { field1: true },
+          },
+          field4: { type: GraphQLString, args: undefined, description: undefined },
+        });
+
+        const typeConfig = tc.getType().toConfig();
+        const field = tc.getType().getFields().field3 as any;
+        const [arg1, arg2] = field.args as any[];
+        const fieldConfig = typeConfig.fields.field3;
+        if (graphqlVersion >= 17) {
+          const { isArgument, isField } = require('graphql/type/definition');
+          expect(isField(field)).toBe(true);
+          expect(field.parentType).toBe(tc.getType());
+          expect(isArgument(arg1)).toBe(true);
+          expect(arg1.parent).toBe(field);
+        }
+        expect(fieldConfig.type).toBe(GraphQLString);
+        expect(fieldConfig.resolve).toBe(resolve);
+        expect(fieldConfig.subscribe).toBe(subscribe);
+        expect(fieldConfig.deprecationReason).toBe('Use field4');
+        expect(fieldConfig.extensions).toEqual({ source: 'test' });
+        expect(fieldConfig.args?.arg1.type).toBe(GraphQLInt);
+        expect(fieldConfig.args?.arg1.default).toEqual({ value: 5 });
+        expect(fieldConfig.args?.arg2.defaultValue).toBeNull();
+        expect(fieldConfig.args?.arg2.extensions).toEqual({ source: 'test' });
+        expect(arg1.isDeprecated).toBe(false);
+        expect(arg2.isDeprecated).toBe(true);
+        expect(arg2.directives).toEqual(
+          expect.arrayContaining([
+            { name: 'argDirective' },
+            { name: 'deprecated', args: { reason: 'Use arg1' } },
+          ])
+        );
+        expect(field.astNode?.name.value).toBe('field3');
+        expect(arg2.astNode?.name.value).toBe('arg2');
+        expect(field.directives).toEqual(
+          expect.arrayContaining([
+            { name: 'fieldDirective' },
+            { name: 'deprecated', args: { reason: 'Use field4' } },
+          ])
+        );
+        expect(field.projection).toEqual({ field1: true });
+        expect(typeConfig.fields.field4.args).toEqual({});
+        expect(typeConfig.fields.field4.description).toBeUndefined();
+        expect(typeConfig.fields.field4.extensions).toEqual({});
+
+        const rebuiltType = new GraphQLObjectType(typeConfig);
+        expect(rebuiltType.toConfig().fields.field3.type).toBe(GraphQLString);
+      });
+
       it('should add fields with converting types from string to object', () => {
         tc.setFields({
           field3: { type: 'String' },
