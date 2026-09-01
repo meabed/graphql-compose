@@ -71,6 +71,31 @@ describe('InterfaceTypeComposer', () => {
         expect(fields.field3.type).toBe(GraphQLString);
       });
 
+      it('should build fields compatible with GraphQL interface type config', () => {
+        iftc.setFields({
+          field3: {
+            type: GraphQLString,
+            args: undefined,
+            extensions: { source: 'test' },
+            projection: { field1: true },
+          },
+        });
+
+        const typeConfig = iftc.getType().toConfig();
+        const field = iftc.getType().getFields().field3 as any;
+        if (graphqlVersion >= 17) {
+          const { isField } = require('graphql/type/definition');
+          expect(isField(field)).toBe(true);
+          expect(field.parentType).toBe(iftc.getType());
+        }
+        expect(typeConfig.fields.field3.args).toEqual({});
+        expect(typeConfig.fields.field3.extensions).toEqual({ source: 'test' });
+        expect(field.projection).toEqual({ field1: true });
+
+        const rebuiltType = new GraphQLInterfaceType(typeConfig);
+        expect(rebuiltType.toConfig().fields.field3.type).toBe(GraphQLString);
+      });
+
       it('should add fields with converting types from string to object', () => {
         iftc.setFields({
           field3: { type: 'String' },
